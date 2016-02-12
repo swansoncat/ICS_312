@@ -5,8 +5,9 @@ segment .data
 ;
 	enterCharacter db "Enter a character: ",0
 	enterInteger db "Enter a integer between 1 and 10: ",0
-        characterWas db "The character entered was: ",0
-	transformedCharacter db "The transformed character is: ",0
+        characterWas db "The character entered was: '",0
+	transformedCharacter db "The transformed character is: '",0
+	apos db "'",0
 
 segment .bss
 ;
@@ -33,12 +34,16 @@ asm_main:
 	call print_string	; print "The character entered was: "
 	mov eax, [character]	; move the character the user gave into eax
 	call print_char		; print the character the user entered
+	mov eax, [apos]
+	call print_char
 	call print_nl		; prints a new line
 	mov eax, transformedCharacter	; print "The transformed character is: "
 	call print_string	; print "The transformed character is: "
 	mov eax, [character]	; transform character
 	add eax, [integer]	; transform character
 	call print_char		; print the transformed character
+	mov eax, [apos]
+	call print_char
 	call print_nl
 	popa
 	mov	eax, 0		; return back to C
