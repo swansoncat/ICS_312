@@ -6,6 +6,9 @@ segment .data
 
 	enterBinary db "Enter a (<16 bits) binary number: ", 0
 	decimalValue db "Its decimal value is: ", 0
+	itsOne db "character read was a 1", 0
+	itsZero db "character read was a 0", 0
+
 
 
 segment .bss
@@ -29,11 +32,13 @@ main_loop:
 	je end			; jump to end if a new line character is read
 	cmp ecx, 16		; check to see if 16 bits have been read
 	je end			; jump to end if 16 bits have been read
-	inc ecx			; increment number of chars read
 	cmp eax, 48		;
 	je zero			;
 	jmp one			;
 zero:
+	mov eax, itsZero
+	call print_string
+	call print_nl
 	mov dx, 65534		; set dx to a mask with a zero in the rightmost bit
 	mov edi, ecx		; set edi to the number of bits read
 rotate_mask_zero:
@@ -44,8 +49,12 @@ rotate_mask_zero:
 	jmp rotate_mask_zero	;
 end_zero_loop:
 	and bx, dx		;
+	inc ecx			; increment the number of chars read
 	jmp main_loop		;
 one:
+	mov eax, itsOne
+	call print_string
+	call print_nl
 	mov dx, 1		; set dx to a mask with a 1 in the rightmost bit, and zeros for the rest
 	mov edi, ecx		;  set edi to the number of bits read
 rotate_mask_one:
@@ -55,13 +64,15 @@ rotate_mask_one:
 	dec edi			;
 	jmp rotate_mask_one	;
 end_one_loop:
-	and bx, dx		;
+	or bx, dx		;
+	inc ecx			; increment the number of chars read
 	jmp main_loop		;
 end:
 	mov eax, decimalValue	; print "Its decimal value is: "
 	call print_string	; print "Its decimal value is: "
 	movzx eax, bx		; print decimal value of number
 	call print_int		; print decimal value of number
+	call print_nl		; print a new line
 	
 	popa
 	mov	eax, 0		; return back to C
