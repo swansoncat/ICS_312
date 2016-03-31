@@ -32,6 +32,7 @@ main_loop:
 	je end			; jump to end if a new line character is read
 	cmp ecx, 16		; check to see if 16 bits have been read
 	je end			; jump to end if 16 bits have been read
+	shl bx, 1		;
 	cmp eax, 48		;
 	je zero			;
 	jmp one			;
@@ -40,14 +41,6 @@ zero:
 	call print_string
 	call print_nl
 	mov dx, 65534		; set dx to a mask with a zero in the rightmost bit
-	mov edi, ecx		; set edi to the number of bits read
-rotate_mask_zero:
-	cmp edi, 0		;
-	je end_zero_loop	;
-	rol dx, 1		;
-	dec edi			;
-	jmp rotate_mask_zero	;
-end_zero_loop:
 	and bx, dx		;
 	inc ecx			; increment the number of chars read
 	jmp main_loop		;
@@ -56,14 +49,6 @@ one:
 	call print_string
 	call print_nl
 	mov dx, 1		; set dx to a mask with a 1 in the rightmost bit, and zeros for the rest
-	mov edi, ecx		;  set edi to the number of bits read
-rotate_mask_one:
-	cmp edi, 0		;
-	je end_one_loop		;
-	rol dx, 1		;
-	dec edi			;
-	jmp rotate_mask_one	;
-end_one_loop:
 	or bx, dx		;
 	inc ecx			; increment the number of chars read
 	jmp main_loop		;
