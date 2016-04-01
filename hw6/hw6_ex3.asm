@@ -42,7 +42,26 @@ print_one:
 	jl read_bits		; jump back to beginning of read bits loop if less than 32 bits have been read
 check_pattern:
 	call print_nl		; print new line
+	mov edi, 0		; set edi to index to count number of bits read
+	mov esi, 0		; set esi to counter for patterns of "101" read
+read_bits2:
+	mov cl, bl		; move smallest 8 bits of number read into cl
+	and cl, 7		; apply mask to cl, zeroing out all the bits except the lowest 3
+	cmp cl, 5		; check to see if cl matches "00000101"
+	jne skip		; skip if cl doesn't match 
+	inc esi			; increment pattern counter if cl matches
+skip:
+	inc edi			; increment number of bits read
+	cmp edi, 32		; check to see if 32 bits have been read
+	je end			; jump to end if 32 bits have been read
+	ror ebx, 1		; roll bits in ebx to the right
+	jmp read_bits2		; jump to beginning of read_bits2 loop
 end:
+	mov eax, numPat		; print "number of patterns: "
+	call print_string	; print "number of patterns: "
+	mov eax, esi		; print # of patterns of "101"
+	call print_int		; print # of patterns of "101"
+	call print_nl		; print new line
 	popa
 	mov	eax, 0		; return back to C
 	leave
