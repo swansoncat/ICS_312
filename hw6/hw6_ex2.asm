@@ -6,7 +6,7 @@ segment .data
 
 	enterBinary db "Enter a (<16 bits) binary number: ", 0
 	decimalValue db "Its decimal value is: ", 0
-
+	tester db "test test test", 0
 
 
 segment .bss
@@ -14,8 +14,8 @@ segment .bss
 ; uninitialized data is put in the bss segment
 ;
 
-	integerOne resd 1
-	integerTwo resd 1
+	integerOne resw 1
+	integerTwo resw 1
 
 
 segment .text
@@ -52,25 +52,33 @@ one:
 end:
 	cmp esi, 1		;
 	je store_second_number	;
-	movsx eax, bx		;
-	call print_int
-	call print_nl
-	mov [integerOne], eax	;
+	mov [integerOne], bx	;
 	inc esi			;
 	cmp esi, 2		;
 	jl start		;
 store_second_number:
-	movsx eax, bx		;
-	call print_int
-	call print_nl
-	mov [integerTwo], eax	;
+	mov [integerTwo], bx	;
 final_end:
-	mov eax, [integerOne]	;
-	call print_int
-	call print_nl
-	mov ebx, [integerTwo]	;
-	add eax, ebx		;
+	mov ax, [integerOne]	;
+	mov bx, [integerTwo]	;
+	add bx, ax		;
+	mov ecx, 0		;
+begin_print:
+	rol bx, 1		;
+	jc one_carry		;
+	mov eax, 0		;
 	call print_int		;
+	inc ecx			;
+	cmp ecx, 16		;
+	jl begin_print		;
+	je done			;
+one_carry:
+	mov eax, 1		;
+	call print_int
+	inc ecx			;
+	cmp ecx, 16		;
+	jl begin_print		;
+done:
 	call print_nl		; print a new line
 	popa
 	mov	eax, 0		; return back to C
