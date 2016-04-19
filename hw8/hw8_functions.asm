@@ -45,7 +45,6 @@ segment .data
 segment .bss
 
 segment .text
-
 printArray:
 	push ebp		; push value of ebp onto stack
 	mov ebp, esp		; set value of ebp to esp
@@ -75,16 +74,40 @@ end_print:
 
 segment .data
 	find_value_not_implemented	db	"findValue: NOT IMPLEMENTED",0
+	testing db "running still...", 0
 
 segment .bss
 
 segment .text
 
 findValue:
-	mov	eax, find_value_not_implemented
-	call	print_string
-	call	print_nl
-	mov	eax, 0
+	push ebp		; push value of ebp onto stack
+	mov ebp, esp		; set value of ebp to esp
+	push edi		; push value of edi onto stack
+	push esi		; push value of esi onto stack
+	mov edi, [ebp+8]	; set edi to the address of Array
+	mov esi, 0		; set esi as counter of number of elements checked against
+	mov eax, [ebp+12]	; move number of items to be checked against to eax
+	cmp eax, 0		; check if number of items to be checked is 0
+	je end			; if 0 items need to be checked, immediately end program
+	mov eax, [ebp+16]	; set eax to value being checked for 
+begin_find:
+	cmp eax, [edi]		; compare value being checked for against integer at array at index that matches esi
+	jz found_match		; jump to found if match found
+	inc esi			; increment counter
+	add edi, 4		; set edi to address of next index of Array
+	cmp esi, [ebp+12]	; compare counter to number of values to check
+	jz not_found		; jump if counter is over the amount of elements to check
+	jmp begin_find		; jump to beginning of find loop
+found_match:
+	mov eax, edi		; mov address where match was found into eax
+	jmp end			; jump to end of subprogram
+not_found:
+	mov eax, 0		; set eax to 0
+end:
+	pop esi			; restore value of esi
+	pop edi			; restore value of edi
+	pop ebp			; restore value of ebp
 	ret
 
 
