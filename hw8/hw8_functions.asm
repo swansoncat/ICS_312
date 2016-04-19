@@ -115,7 +115,7 @@ end:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 segment .data
-	swap_values_not_implemented	db	"swapValues: NOT IMPLEMENTED",0
+	;swap_values_not_implemented	db	"swapValues: NOT IMPLEMENTED",0
 
 segment .bss
 
@@ -123,9 +123,21 @@ segment .text
 
 
 swapValues:
-	mov	eax, swap_values_not_implemented
-	call	print_string
-	call	print_nl
-	mov	eax, 0
+	push ebp		; push value of ebp onto stack
+	mov ebp, esp		; set ebp to esp
+	push esi		; push esi onto stack
+	push edi		; push edi onto stack
+	push eax		; push eax onto stack
+	push ebx		; push ebx onto stack
+	mov esi, [ebp+8]	; move first address into esi
+	mov edi, [ebp+12]	; move second address into edi
+	mov eax, [esi]		; move value at address in esi to eax
+	mov ebx, [edi]		; move value at address in edi to ebx
+	mov [edi], eax		; move integer in eax into address at edi
+	mov [esi], ebx		; move integer in ebx into address at ebi
+	pop ebx			; pop old value of ebx
+	pop eax			; pop old value of eax
+	pop edi			; pop old value of edi
+	pop esi			; pop old value of esi
+	pop ebp			; pop old value of ebp
 	ret
-
